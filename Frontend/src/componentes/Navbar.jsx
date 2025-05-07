@@ -62,7 +62,7 @@ const Navbar = ({ isOpen, toggleSidebar }) => {
             to="/usuarios"
           >
             <i className="bi bi-person-badge me-2"></i>
-            <span>Mi perfil :</span>
+            <span>Mi perfil</span>
           </NavLink>
         </li>
 

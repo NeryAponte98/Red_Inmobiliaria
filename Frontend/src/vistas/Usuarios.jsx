@@ -4,7 +4,7 @@ const Usuarios = () => {
   return (
     <div>
       <h1>Usuarios</h1>
-      <p>Administración de usuarios</p>
+      <p>Administración panel de usuarios</p>
     </div>
   );
 };
