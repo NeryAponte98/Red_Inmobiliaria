@@ -69,7 +69,7 @@ const Navbar = ({ isOpen, toggleSidebar }) => {
        <li className="sidebar-item">
           <NavLink 
             className={({isActive}) => isActive ? "sidebar-link active" : "sidebar-link"} 
-            to="/logout"
+            to="/login"
           >
             <i className="bi bi-box-arrow-right me-2"></i>
             <span>Logout</span>

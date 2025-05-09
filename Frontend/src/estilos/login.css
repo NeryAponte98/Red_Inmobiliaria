@@ -1,0 +1,148 @@
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  width: 100%;
+  background-color: #F1DEC9;
+}
+
+.login-form-container {
+  width: 100%;
+  max-width: 390px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 2.5rem;
+  background-color:  #343a40;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.login-logo {
+  display: flex;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+
+.login-logo h1 {
+  font-size: 1.8rem;
+  color: #C8B6A6;
+  font-weight: 600;
+}
+
+.login-logo i {
+  color: #C8B6A6;
+  font-size: 1.8rem;
+}
+
+.login-form, .register-form {
+  width: 100%;
+}
+
+.login-form h2, .register-form h2 {
+  margin-bottom: 1.5rem;
+  text-align: center;
+  color: #C8B6A6;
+  font-weight: 600;
+}
+
+.form-group {
+  margin-bottom: 1.2rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color:#C8B6A6;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border-color 0.3s;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: #A94442;
+  box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.2);
+}
+
+.form-actions {
+  margin-top: 1.5rem;
+}
+
+.btn-primary1 {
+  width: 100%;
+  background-color: #a94442;
+  color: white;
+  border: none;
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s;
+  font-weight: 500;
+}
+
+.btn-primary1:hover {
+  background-color: #803433;
+  transform: translateY(-2px);
+}
+
+.btn-primary1:active {
+  transform: translateY(0);
+}
+
+.login-options {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1rem;
+  font-size: 0.9rem;
+  padding: 0 0.5rem ;
+}
+
+.forgot-password {
+  color: #C8B6A6;
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+.forgot-password:hover {
+  color: #A94442;
+  text-decoration: underline;
+}
+
+.register-link, .back-to-login {
+  background: none;
+  border: none;
+  color: #C8B6A6;
+  cursor: pointer;
+  font-size: 0.9rem;
+  padding: 0;
+  transition: color 0.3s;
+}
+
+.register-link:hover, .back-to-login:hover {
+  color: #A94442;
+  text-decoration: underline;
+}
+
+/* Responsive adjustments */
+@media (max-width: 500px) {
+  .login-form-container {
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  }
+}

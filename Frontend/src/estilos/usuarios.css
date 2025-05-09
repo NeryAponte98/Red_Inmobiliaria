@@ -1,0 +1,264 @@
+:root {
+    --primary: #8D7B68;
+    --secondary: #A4907C;
+    --accent: #C8B6A6;
+    --light: #F1DEC9;
+    --dark: #4D4639;
+    --error: #A94442;
+}
+
+/* Contenedor del perfil */
+.profile-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    width: 100%;
+}
+
+/* Secciones del perfil */
+.profile-section {
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px #343a40dc;
+    padding: 1.5rem;
+}
+
+.page-header {
+    margin-bottom: 1.5rem;
+}
+
+.page-header h2 {
+    color: var(--dark);
+    font-size: 1.8rem;
+    margin-bottom: 0.5rem;
+}
+
+.page-header p {
+    color: var(--secondary);
+}
+
+/* Cabecera del perfil */
+.user-profile-header {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    position: relative;
+}
+
+.profile-avatar {
+    position: relative;
+}
+
+.profile-avatar i {
+    font-size: 5rem;
+    color: var(--secondary);
+}
+
+.profile-header-info h3 {
+    color: var(#343a40);
+    font-size: 1.8rem;
+    margin-bottom: 0.25rem;
+}
+
+.profile-header-info p {
+    color: var(--secondary);
+    margin: 0.25rem 0;
+}
+
+/* Encabezado de sección */
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--light);
+}
+
+.section-header h3 {
+    color: var(#343a40);
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0;
+}
+
+/* Vista de información */
+.profile-info {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: 1fr;
+}
+
+.info-row {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 1rem;
+    align-items: center;
+}
+
+.info-label {
+    color: var(--secondary);
+    font-weight: 600;
+}
+
+.info-value {
+    color: var(--dark);
+}
+
+/* Formulario de edición */
+.profile-form {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: 1fr;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.form-group label {
+    color: var(--secondary);
+    font-weight: 600;
+}
+
+.form-group input {
+    padding: 0.75rem;
+    border-radius: 5px;
+    border: 1px solid var(--accent);
+    font-size: 1rem;
+    width: 100%;
+}
+
+.form-group input:focus {
+    border-color: var(--primary);
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(141, 123, 104, 0.2);
+}
+
+.form-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+    justify-content: flex-start;
+}
+
+/* Botones */
+.btn-primary {
+    background-color: var(--primary);
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 5px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.btn-primary:hover {
+    background-color: var(--dark);
+}
+
+.btn-secondary {
+    background-color: var(--light);
+    color: var(--dark);
+    border: 1px solid var(--accent);
+    padding: 0.75rem 1.5rem;
+    border-radius: 5px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-secondary:hover {
+    background-color: var(--accent);
+}
+
+.btn-danger {
+    background-color: var(--error);
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 5px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: filter 0.2s;
+}
+
+.btn-danger:hover {
+    filter: brightness(90%);
+}
+
+/* Estilos para el modal (compatibles con tu estructura existente) */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.modal-content {
+  background-color: white;
+  border-radius: 10px;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+}
+
+.modal-header {
+  background-color: var(--light);
+  padding: 1rem 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-header h3 {
+  color: var(--error);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.close-modal {
+  background-color: transparent;
+  border: none;
+  font-size: 1.5rem;
+  color: var(--dark);
+  cursor: pointer;
+}
+
+.modal-body {
+  padding: 1.5rem;
+}
+
+.modal-footer {
+  padding: 1rem 1.5rem;
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  background-color: var(--light);
+}
+
+/* Animación para el modal */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Utilidades */
+.hidden {
+  display: none !important;
+}
