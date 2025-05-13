@@ -1,59 +1,60 @@
+// Este servicio maneja la autenticación y almacenamiento del token JWT
 import axios from 'axios';
 
-// Configuración de API base URL - ajusta según tu configuración
-const API_URL = "http://localhost:8094/api";
+const API_URL = 'http://localhost:8094/api/auth';
 
 class AuthService {
+  // Método para iniciar sesión
   login(nombreUsuario, password) {
     return axios
-      .post(API_URL + "/auth/login", {
-        nombreUsuario,   
+      .post(`${API_URL}/login`, {
+        nombreUsuario,
         password
       })
       .then(response => {
         if (response.data.token) {
-          localStorage.setItem("user", JSON.stringify(response.data));
+          localStorage.setItem('token', response.data.token);
+          localStorage.setItem('user', JSON.stringify({
+            id: response.data.id,
+            username: response.data.username,
+            email: response.data.email,
+            role: response.data.role
+          }));
         }
-        
         return response.data;
       });
   }
 
+  // Método para cerrar sesión
   logout() {
-    localStorage.removeItem("user");
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
   }
 
-  register(userData) {
-    return axios.post(API_URL + "/auth/register", {
-      username,
+  // Método para registrar un nuevo usuario
+  register(nombreUsuario, email, password, tipoUsuarioId) {
+    return axios.post(`${API_URL}/register`, {
+      nombreUsuario,
       email,
-      password
+      password,
+      tipoUsuarioId
     });
   }
 
-  getCurrentUser() {
-    const userStr = localStorage.getItem("user");
-    if (userStr) return JSON.parse(userStr);
-    return null;
-  }
-
-  isAuthenticated() {
-    const user = this.getCurrentUser();
-    return !!user && !!user.token;
-  }
-
+  // Obtener el token JWT almacenado
   getToken() {
-    const user = this.getCurrentUser();
-    return user?.token;
+    return localStorage.getItem('token');
   }
 
-  hasRole(requiredRole) {
-    const user = this.getCurrentUser();
-    if (!user || !user.roles) return false;
-    
-    return user.roles.some(role => 
-      role.toLowerCase() === requiredRole.toLowerCase()
-    );
+  // Obtener el usuario actual
+  getCurrentUser() {
+    return JSON.parse(localStorage.getItem('user'));
+  }
+
+  // Verificar si el usuario está autenticado
+  isAuthenticated() {
+    const token = this.getToken();
+    return !!token; // Devuelve true si existe un token
   }
 }
 
