@@ -1,60 +1,166 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import '../estilos/usuarios.css';
+import { 
+  isAuthenticated, 
+  parseJwt, 
+  logout,
+  cargarDatosUsuario,
+  actualizarDatosUsuario,
+  cambiarContraseñaUsuario,
+  eliminarCuentaUsuario
+} from '../servicios/UsuarioServices.js';
 
-const Usuarios = () => {
-  // Estados para manejar la visibilidad del formulario de edición y el modal
+const Usuario = () => {
+  const navigate = useNavigate();
   const [isEditFormVisible, setIsEditFormVisible] = useState(false);
   const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
   
-  // Datos de ejemplo (en una app real vendrían de props o una API)
+  // Estado para almacenar los datos del usuario
   const [userData, setUserData] = useState({
-    fullName: 'María González',
-    email: 'maria@ejemplo.com',
-    role: 'Usuario',
-    joinedDate: '15/03/2023'
+    nombre_usuario: '',
+    email_usuario: '',
+    tipo_usuario: '',
+    id_usuario: null
   });
   
   // Estado para los campos del formulario
   const [formData, setFormData] = useState({
-    fullName: userData.fullName,
-    email: userData.email,
+    nombre_usuario: '',
+    email_usuario: '',
     currentPassword: '',
     newPassword: '',
     confirmPassword: '',
     deleteConfirmPassword: ''
   });
   
+  // Verificar autenticación al cargar el componente
+  useEffect(() => {
+    if (!isAuthenticated()) {
+      navigate('/usuarios');
+      return;
+    }
+
+    const token = localStorage.getItem("token");
+    const decodedToken = parseJwt(token);
+    const userId = decodedToken ? decodedToken.id : null;
+    const tipoUser = decodedToken ? decodedToken.sub : null;
+
+    if (!userId) {
+      console.error("No se pudo obtener el ID del usuario.");
+      return;
+    }
+
+    // Verificar tipo de usuario para acceso a propiedades
+    if (tipoUser === "Cliente") {
+      // Aquí podrías manejar restricciones de UI basadas en tipo de usuario
+    }
+
+    // Cargar datos del usuario
+    const fetchUserData = async () => {
+      try {
+        const usuario = await cargarDatosUsuario(userId);
+        
+        setUserData({
+          nombre_usuario: usuario.nombre_usuario,
+          email_usuario: usuario.email_usuario,
+          tipo_usuario: usuario.id_tipo_usuario.nombre_tipo_usuario,
+          id_usuario: userId
+        });
+      } catch (error) {
+        console.error("Error al cargar los datos:", error);
+      }
+    };
+
+    fetchUserData();
+  }, [navigate]);
+
   // Actualizar formData cuando userData cambie
   useEffect(() => {
     setFormData(prevData => ({
       ...prevData,
-      fullName: userData.fullName,
-      email: userData.email
+      nombre_usuario: userData.nombre_usuario,
+      email_usuario: userData.email_usuario
     }));
   }, [userData]);
 
-  // Manejadores de eventos
+  // Manejar cambios en los campos del formulario
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prevData => ({
+      ...prevData,
+      [name]: value
+    }));
+  };
+
+  // MANEJADORES DE EVENTOS PARA LA UI
   const handleEditClick = () => {
     setIsEditFormVisible(true);
   };
 
   const handleCancelEdit = () => {
-    // Restaurar los valores originales al cancelar
+    // Restaurar valores originales al cancelar
     setFormData(prevData => ({
       ...prevData,
-      fullName: userData.fullName,
-      email: userData.email
+      nombre_usuario: userData.nombre_usuario,
+      email_usuario: userData.email_usuario
     }));
     setIsEditFormVisible(false);
   };
   
-  const handleSaveProfile = () => {
-    // Actualizar los datos del usuario con los valores del formulario
-    setUserData(prevData => ({
-      ...prevData,
-      fullName: formData.fullName,
-      email: formData.email
-    }));
-    setIsEditFormVisible(false);
+  const handleSaveProfile = async () => {
+    try {
+      const { nombre_usuario, email_usuario } = formData;
+      const userId = userData.id_usuario;
+      
+      const usuarioActualizado = {};
+      if (nombre_usuario.trim() !== "") {
+        usuarioActualizado.nombre_usuario = nombre_usuario;
+      }
+      if (email_usuario.trim() !== "") {
+        usuarioActualizado.email_usuario = email_usuario;
+      }
+
+      const data = await actualizarDatosUsuario(userId, usuarioActualizado);
+      alert("Perfil actualizado correctamente");
+      setIsEditFormVisible(false);
+      
+      // Recargar datos del usuario
+      const usuario = await cargarDatosUsuario(userId);
+      setUserData({
+        nombre_usuario: usuario.nombre_usuario,
+        email_usuario: usuario.email_usuario,
+        tipo_usuario: usuario.id_tipo_usuario.nombre_tipo_usuario,
+        id_usuario: userId
+      });
+    } catch (error) {
+      alert("Error al actualizar el perfil: " + error.message);
+    }
+  };
+
+  const handlePasswordChange = async () => {
+    try {
+      const { currentPassword, newPassword, confirmPassword } = formData;
+      const userId = userData.id_usuario;
+
+      if (newPassword !== confirmPassword) {
+        alert("Las contraseñas nuevas no coinciden.");
+        return;
+      }
+
+      await cambiarContraseñaUsuario(userId, currentPassword, newPassword);
+      alert("Contraseña actualizada correctamente.");
+      
+      // Limpiar campos de contraseña
+      setFormData(prevData => ({
+        ...prevData,
+        currentPassword: '',
+        newPassword: '',
+        confirmPassword: ''
+      }));
+    } catch (error) {
+      alert("Error al cambiar la contraseña: " + error.message);
+    }
   };
 
   const handleDeleteAccountClick = () => {
@@ -70,30 +176,18 @@ const Usuarios = () => {
     }));
   };
   
-  const handleConfirmDelete = () => {
-    // Aquí iría la lógica para eliminar la cuenta
-    console.log('Cuenta eliminada');
-    setIsDeleteModalVisible(false);
-  };
-  
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prevData => ({
-      ...prevData,
-      [name]: value
-    }));
-  };
-  
-  const handlePasswordChange = () => {
-    // Aquí iría la lógica para cambiar la contraseña
-    console.log('Contraseña cambiada');
-    // Limpiar campos de contraseña
-    setFormData(prevData => ({
-      ...prevData,
-      currentPassword: '',
-      newPassword: '',
-      confirmPassword: ''
-    }));
+  const handleConfirmDelete = async () => {
+    try {
+      const { deleteConfirmPassword } = formData;
+      const userId = userData.id_usuario;
+      
+      await eliminarCuentaUsuario(userId, deleteConfirmPassword);
+      alert("La cuenta ha sido eliminada");
+      logout();
+      navigate('/login');
+    } catch (error) {
+      alert("Error: " + error.message);
+    }
   };
 
   return (
@@ -110,10 +204,10 @@ const Usuarios = () => {
           </div>
 
           <div className="profile-header-info">
-            <h3>{userData.fullName}</h3>
-            <p>{userData.email}</p>
+            <h3>{userData.nombre_usuario}</h3>
+            <p>{userData.email_usuario}</p>
             <p>
-              <span>{userData.role}</span> · Miembro desde <span>{userData.joinedDate}</span>
+              <span>{userData.tipo_usuario}</span>
             </p>
           </div>
         </div>
@@ -131,11 +225,11 @@ const Usuarios = () => {
             <div className="profile-info">
               <div className="info-row">
                 <div className="info-label">Nombre Completo:</div>
-                <div className="info-value">{userData.fullName}</div>
+                <div className="info-value">{userData.nombre_usuario}</div>
               </div>
               <div className="info-row">
                 <div className="info-label">Correo Electrónico:</div>
-                <div className="info-value">{userData.email}</div>
+                <div className="info-value">{userData.email_usuario}</div>
               </div>
             </div>
           )}
@@ -148,8 +242,8 @@ const Usuarios = () => {
                 <input 
                   type="text" 
                   id="edit-fullname" 
-                  name="fullName"
-                  value={formData.fullName}
+                  name="nombre_usuario"
+                  value={formData.nombre_usuario}
                   onChange={handleInputChange}
                 />
               </div>
@@ -158,8 +252,8 @@ const Usuarios = () => {
                 <input 
                   type="email" 
                   id="edit-email" 
-                  name="email"
-                  value={formData.email}
+                  name="email_usuario"
+                  value={formData.email_usuario}
                   onChange={handleInputChange}
                 />
               </div>
@@ -271,4 +365,4 @@ const Usuarios = () => {
   );
 };
 
-export default Usuarios;
+export default Usuario;
