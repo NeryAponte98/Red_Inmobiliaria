@@ -71,15 +71,6 @@
   transition: border-color 0.3s;
 }
 
-.form-group select{
-  width: 100%;
-  padding: 12px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  font-size: 1rem;
-  transition: border-color 0.3s;
-}
-
 .form-group input:focus {
   outline: none;
   border-color: #A94442;
