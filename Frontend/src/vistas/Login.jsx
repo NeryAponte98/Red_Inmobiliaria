@@ -2,6 +2,7 @@ import '../estilos/login.css';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import logo from '../assets/logo.png';
 
 // URL base para las peticiones API
 const API_URL = "http://localhost:8094/api/auth";
@@ -98,7 +99,8 @@ const Login = () => {
         <div className="login-container">
             <div className="login-form-container">
                 <div className="login-logo">
-                    <i className="bi bi-building me-2"></i>
+                    {/*<i className="bi bi-building me-2"></i>*/}
+                    <img src={logo} alt="Logo" height="40" className="d-inline-block align-top me-2" />
                     <h1>Red Inmobiliaria</h1>
                 </div>
 
@@ -214,9 +216,9 @@ const Login = () => {
                                 required
                                 disabled={loading}
                             >
-                                <option value="1">Cliente</option>
-                                <option value="2">Agente Inmobiliario</option>
-                                {/* Añadir más opciones según los tipos disponibles */}
+                                <option value="1">Administrador</option>
+                                <option value="2">Cliente</option>
+                                <option value="3">Agente Inmobiliario</option>
                             </select>
                         </div>
                         

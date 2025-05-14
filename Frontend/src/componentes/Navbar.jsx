@@ -6,8 +6,9 @@ const Navbar = ({ isOpen, toggleSidebar }) => {
     <div className={`sidebar ${isOpen ? 'open' : ''}`}>
       <div className="sidebar-header">
         <NavLink className="sidebar-brand" to="/">
-          {/*<img src={logo} alt="Logo" height="40" className="d-inline-block align-top me-2" />*/}
-          <i className="bi bi-building me-2"></i>
+          {/*<i className="bi bi-building me-2"></i>*/}
+          <img src={logo} alt="Logo" height="40" className="d-inline-block align-top me-2" />
+          
           <span className="brand-text">Red Inmobiliaria</span>
         </NavLink>
         <button className="sidebar-toggle d-md-none" onClick={toggleSidebar}>
