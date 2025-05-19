@@ -1,12 +1,11 @@
+"use client";
 import React from 'react';
+import Propiedades from '../componentes/Propiedades';
 
-const Propiedades = () => {
+export default function PropiedadesPage() {
   return (
     <div>
-      <h1>Propiedades</h1>
-      <p>Lista de propiedades disponibles</p>
+      <Propiedades />
     </div>
   );
-};
-
-export default Propiedades;
+}
