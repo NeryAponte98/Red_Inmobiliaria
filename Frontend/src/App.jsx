@@ -1,9 +1,8 @@
-// src/App.js
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { useEffect } from 'react';
 import setupAxiosInterceptors from './servicios/AxiosInterceptor';
 import AuthService from './servicios/AuthServices';
-import ProtectedRoute from './servicios/ProtectedRoute.js';
+import ProtectedRoute from './servicios/ProtectedRoute';
 import Layout from './componentes/Layout';
 import Citas from './vistas/Citas';
 import Propiedades from './vistas/Propiedades';
@@ -30,6 +29,8 @@ function App() {
             ? <Navigate to="/inicio" replace /> 
             : <Login />
         } />
+
+        <Route path="/logout" element={<Logout />} />
         
         {/* Rutas protegidas dentro del Layout */}
         <Route element={<ProtectedRoute><Layout /></ProtectedRoute>}>
@@ -43,8 +44,8 @@ function App() {
             </ProtectedRoute>
           } />
           <Route path="/favoritos" element={<Favoritos />} />
-          <Route path="/logout" element={<Logout />} />
-          <Route path="*" element={<Navigate to="/inicio" />} />
+          
+          <Route path="*" element={<Navigate to="/login" />} />
         </Route>
       </Routes>
     </Router>

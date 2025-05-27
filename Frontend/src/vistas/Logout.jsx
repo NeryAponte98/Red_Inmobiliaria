@@ -1,16 +1,20 @@
-// src/vistas/Logout.js
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Navigate } from 'react-router-dom';
 import AuthService from '../servicios/AuthServices';
 
 const Logout = () => {
+  const [loggedOut, setLoggedOut] = useState(false);
+  console.log("Cerrar sesion");
   useEffect(() => {
-    // Cerrar sesión al montar el componente
     AuthService.logout();
+    setLoggedOut(true);
   }, []);
 
-  // Redirigir automáticamente al login
-  return <Navigate to="/login" replace />;
+  if (loggedOut) {
+    return <Navigate to="/login" replace />;
+  }
+
+  return null;
 };
 
 export default Logout;

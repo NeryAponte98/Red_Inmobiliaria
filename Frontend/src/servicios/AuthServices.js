@@ -27,8 +27,10 @@ class AuthService {
 
   // Método para cerrar sesión
   logout() {
+    console.log('Cerrando sesión...');
     localStorage.removeItem('token');
     localStorage.removeItem('user');
+    console.log('Token después de logout:', localStorage.getItem('token'));
   }
 
   // Método para registrar un nuevo usuario

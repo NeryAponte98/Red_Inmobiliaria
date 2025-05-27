@@ -1,9 +1,7 @@
 import { useState, useEffect  } from 'react';
 import { Outlet } from 'react-router-dom';
 import Navbar from './Navbar';
-import { 
-  getCurrentUser
-} from '../servicios/AuthServices';
+
 
 const Layout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
