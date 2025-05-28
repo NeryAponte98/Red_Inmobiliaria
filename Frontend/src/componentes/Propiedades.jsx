@@ -296,7 +296,7 @@ export default function DashboardInmobiliario() {
             Propiedades Registradas Recientemente
           </h3>
           <button
-            className="flex items-center bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+            className="flex items-center bg-blue-500 text-#343a40 px-4 py-2 rounded hover:bg-blue-600  background-color:#A94442"
             onClick={handleAgregarClick}
           >
             <Plus className="mr-2" size={18} />

@@ -1,7 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect  } from 'react';
+import { Outlet } from 'react-router-dom';
 import Navbar from './Navbar';
 
-const Layout = ({ children }) => {
+
+const Layout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   
   const toggleSidebar = () => {
@@ -28,7 +30,7 @@ const Layout = ({ children }) => {
         
         {/* Page Content */}
         <main className="page-content">
-          {children}
+          <Outlet /> {/* Reemplazamos children con Outlet */}
         </main>
         
         {/* Footer */}
