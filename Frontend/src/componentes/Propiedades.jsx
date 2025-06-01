@@ -1,518 +1,437 @@
-"use client";
-import React, { useState, useEffect } from 'react';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { Clock, Plus, Edit, Trash2 } from 'lucide-react';
+import React, { useState, useEffect } from "react";
+import { Search } from 'lucide-react';
+import '../estilos/Propiedades.css'; // Importar el archivo CSS
 
-// Función para formatear moneda
-const formatCurrency = (value) => {
-  return new Intl.NumberFormat('es-CO', {
-    style: 'currency',
-    currency: 'COP',
-    minimumFractionDigits: 0
-  }).format(value);
-};
+const API_BASE = "http://localhost:8094/api/propiedades";
 
-// Procesar datos de propiedades
-const procesarDatosPropiedades = (propiedades) => {
-  // Rangos de precios
-  const rangosPrecios = [
-    { rango: '< $100M', cantidad: propiedades.filter(p => p.precio < 100000000).length },
-    { rango: '$100M - $200M', cantidad: propiedades.filter(p => p.precio >= 100000000 && p.precio < 200000000).length },
-    { rango: '$200M - $500M', cantidad: propiedades.filter(p => p.precio >= 200000000 && p.precio < 500000000).length },
-    { rango: '$500M - $1B', cantidad: propiedades.filter(p => p.precio >= 500000000 && p.precio < 1000000000).length },
-    { rango: '> $1B', cantidad: propiedades.filter(p => p.precio >= 1000000000).length }
-  ];
-
-  // Propiedades recientes (últimas 5)
-  const propiedadesRecientes = propiedades.slice(-5).reverse();
-
-  return {
-    rangosPrecios,
-    propiedadesRecientes
-  };
-};
-
-export default function DashboardInmobiliario() {
-  const [dashboardData, setDashboardData] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [isAdding, setIsAdding] = useState(false);
-  const [newPropiedad, setNewPropiedad] = useState({
-    direccion: '',
-    tipo: { id: '' },
-    operacion: { id: '' },
-    estado: { id: '' },
-    precio: 0,
-    latitud: 0,
-    longitud: 0,
-    idVendedor: ''
-  });
-  const [tiposPropiedad, setTiposPropiedad] = useState([]);
+export default function GestionPropiedades() {
+  // Estados
+  const [propiedades, setPropiedades] = useState([]);
+  const [tipos, setTipos] = useState([]);
   const [operaciones, setOperaciones] = useState([]);
-  const [estadosPropiedad, setEstadosPropiedad] = useState([]);
-  const [editingId, setEditingId] = useState(null);
-  const [editingPropiedad, setEditingPropiedad] = useState(null);
+  const [estados, setEstados] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [formVisible, setFormVisible] = useState(false);
+  const [formTitulo, setFormTitulo] = useState("Nueva Propiedad");
 
-  const API_BASE = 'http://localhost:8094/api/propiedades';
+  // Campos formulario
+  const [formData, setFormData] = useState({
+    idPropiedad: "",
+    direccion: "",
+    precio: "",
+    tipo: "",
+    operacion: "",
+    estado: "",
+    latitud: "",
+    longitud: "",
+  });
 
-  // Cargar datos iniciales (propiedades, tipos, operaciones, estados)
-  const fetchData = async () => {
-    setLoading(true);
+  // Cargar listas de select y propiedades al iniciar
+  useEffect(() => {
+    cargarOpciones();
+    cargarPropiedades();
+  }, []);
+
+  // Funciones para cargar datos
+  const cargarPropiedades = async () => {
     try {
-      const [
-        propiedadesResponse,
-        tiposResponse,
-        operacionesResponse,
-        estadosResponse,
-      ] = await Promise.all([
-        fetch(API_BASE),
+      const res = await fetch(API_BASE);
+      const data = await res.json();
+      setPropiedades(data);
+    } catch (error) {
+      console.error("Error cargando propiedades:", error);
+    }
+  };
+
+  const cargarOpciones = async () => {
+    try {
+      const [tiposRes, opsRes, estadosRes] = await Promise.all([
         fetch(`${API_BASE}/tipos`),
         fetch(`${API_BASE}/operaciones`),
         fetch(`${API_BASE}/estados`),
       ]);
-
-      if (!propiedadesResponse.ok) throw new Error('Error al cargar propiedades');
-      if (!tiposResponse.ok) throw new Error('Error al cargar tipos de propiedad');
-      if (!operacionesResponse.ok) throw new Error('Error al cargar operaciones');
-      if (!estadosResponse.ok) throw new Error('Error al cargar estados');
-
-      const propiedades = await propiedadesResponse.json();
-      const tipos = await tiposResponse.json();
-      const operacionesData = await operacionesResponse.json();
-      const estados = await estadosResponse.json();
-
-      const data = procesarDatosPropiedades(propiedades);
-      setDashboardData(data);
-      setTiposPropiedad(tipos);
-      setOperaciones(operacionesData);
-      setEstadosPropiedad(estados);
-      setError(null);
-    } catch (err) {
-      setError('Error al cargar los datos');
-      console.error('Error:', err);
-    } finally {
-      setLoading(false);
+      const tiposData = await tiposRes.json();
+      const opsData = await opsRes.json();
+      const estadosData = await estadosRes.json();
+      setTipos(tiposData);
+      setOperaciones(opsData);
+      setEstados(estadosData);
+    } catch (error) {
+      console.error("Error cargando opciones:", error);
     }
   };
 
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  // Handlers para el formulario de agregar
-  const handleAgregarClick = () => {
-    setIsAdding(true);
-    setNewPropiedad({
-      direccion: '',
-      tipo: { id: tiposPropiedad[0]?.idTipo || '' },
-      operacion: { id: operaciones[0]?.idOperacion || '' },
-      estado: { id: estadosPropiedad[0]?.idEstado || '' },
-      precio: 0,
-      latitud: 0,
-      longitud: 0,
-      idVendedor: ''
+  // Mostrar formulario para crear
+  const mostrarFormulario = () => {
+    setFormData({
+      idPropiedad: "",
+      direccion: "",
+      precio: "",
+      tipo: tipos.length ? tipos[0].idTipo : "",
+      operacion: operaciones.length ? operaciones[0].idOperacion : "",
+      estado: estados.length ? estados[0].idEstado : "",
+      latitud: "",
+      longitud: "",
     });
+    setFormTitulo("Nueva Propiedad");
+    setFormVisible(true);
   };
 
-  const handleAgregarInputChange = (e) => {
-    const { name, value } = e.target;
-    if (name.startsWith('tipo.') || name.startsWith('operacion.') || name.startsWith('estado.')) {
-      const [relation, field] = name.split('.');
-      setNewPropiedad(prev => ({
-        ...prev,
-        [relation]: { ...prev[relation], [field]: value },
-      }));
-    } else {
-      setNewPropiedad(prev => ({ ...prev, [name]: value }));
+  // Manejar inputs
+  const handleChange = (e) => {
+    const { id, value } = e.target;
+    setFormData((prev) => ({ ...prev, [id]: value }));
+  };
+
+  // Función para obtener el ID del usuario logueado
+  const getCurrentUserId = () => {
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    return user.id || user.idUsuario || user.userId;
+  };
+
+  // Enviar formulario
+  const submitFormulario = async (e) => {
+    e.preventDefault();
+
+    // Obtener el ID del usuario logueado
+    const userId = getCurrentUserId();
+    
+    // Validar que tengamos un ID de usuario
+    if (!userId) {
+      alert('Error: No se pudo obtener el ID del usuario. Por favor, inicia sesión nuevamente.');
+      return;
     }
-  };
 
-  const handleGuardarNuevaPropiedad = async () => {
+    const propiedad = {
+      direccion: formData.direccion,
+      precio: parseFloat(formData.precio),
+      tipo: { idTipo: parseInt(formData.tipo) },
+      operacion: { idOperacion: parseInt(formData.operacion) },
+      estado: { idEstado: parseInt(formData.estado) },
+      latitud: parseFloat(formData.latitud),
+      longitud: parseFloat(formData.longitud),
+      idVendedor: parseInt(userId), // Usar el ID del usuario logueado
+    };
+
     try {
-      const response = await fetch(API_BASE, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          ...newPropiedad,
-          tipo: { idTipo: parseInt(newPropiedad.tipo.id) },
-          operacion: { idOperacion: parseInt(newPropiedad.operacion.id) },
-          estado: { idEstado: parseInt(newPropiedad.estado.id) },
-        }),
+      const method = formData.idPropiedad ? "PUT" : "POST";
+      const url = formData.idPropiedad
+        ? `${API_BASE}/${formData.idPropiedad}`
+        : API_BASE;
+
+      const res = await fetch(url, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(propiedad),
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(`Error al agregar propiedad: ${JSON.stringify(errorData)}`);
+      if (!res.ok) {
+        const errorText = await res.text();
+        throw new Error(`Error en la operación: ${errorText}`);
       }
 
-      setIsAdding(false);
-      fetchData(); // Recargar datos después de agregar
-    } catch (err) {
-      setError(err.message);
-      console.error('Error al agregar propiedad:', err);
+      alert(
+        formData.idPropiedad
+          ? "Propiedad actualizada exitosamente"
+          : "Propiedad creada exitosamente"
+      );
+      setFormVisible(false);
+      cargarPropiedades();
+    } catch (error) {
+      console.error("Error en la operación:", error);
+      alert(`Error al guardar propiedad: ${error.message}`);
     }
   };
 
-  const handleCancelarAgregar = () => {
-    setIsAdding(false);
-  };
-
-  // Handlers para el formulario de editar
-  const handleEditarClick = (id) => {
-    const propiedadAEditar = dashboardData?.propiedadesRecientes?.find(p => p.id === id);
-    if (propiedadAEditar) {
-      setEditingId(id);
-      setEditingPropiedad({
-        idPropiedad: propiedadAEditar.id,
-        direccion: propiedadAEditar.direccion,
-        precio: propiedadAEditar.precio,
-        tipo: { id: propiedadAEditar.tipo?.id },
-        operacion: { id: propiedadAEditar.operacion?.id },
-        estado: { id: propiedadAEditar.estado?.id },
-        latitud: propiedadAEditar.latitud,
-        longitud: propiedadAEditar.longitud,
-        idVendedor: propiedadAEditar.idVendedor
-      });
-      setIsAdding(true); // Reutilizamos el modal de agregar para editar
-    }
-  };
-
-  const handleEditarInputChange = (e) => {
-    const { name, value } = e.target;
-    if (name.startsWith('tipo.') || name.startsWith('operacion.') || name.startsWith('estado.')) {
-      const [relation, field] = name.split('.');
-      setEditingPropiedad(prev => ({
-        ...prev,
-        [relation]: { ...prev[relation], [field]: value },
-      }));
-    } else {
-      setEditingPropiedad(prev => ({ ...prev, [name]: value }));
-    }
-  };
-
-  const handleGuardarEdicion = async () => {
-    if (!editingId || !editingPropiedad) return;
+  // Editar propiedad
+  const editarPropiedad = async (id) => {
     try {
-      const response = await fetch(`${API_BASE}/${editingId}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          ...editingPropiedad,
-          tipo: { idTipo: parseInt(editingPropiedad.tipo.id) },
-          operacion: { idOperacion: parseInt(editingPropiedad.operacion.id) },
-          estado: { idEstado: parseInt(editingPropiedad.estado.id) },
-        }),
+      const res = await fetch(`${API_BASE}/${id}`);
+      const prop = await res.json();
+
+      setFormData({
+        idPropiedad: prop.idPropiedad,
+        direccion: prop.direccion,
+        precio: prop.precio,
+        tipo: prop.tipo.idTipo,
+        operacion: prop.operacion.idOperacion,
+        estado: prop.estado.idEstado,
+        latitud: prop.latitud,
+        longitud: prop.longitud,
+        // No incluimos idVendedor en el formulario
       });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(`Error al editar propiedad ${editingId}: ${JSON.stringify(errorData)}`);
-      }
-
-      setEditingId(null);
-      setEditingPropiedad(null);
-      setIsAdding(false);
-      fetchData(); // Recargar datos después de editar
-    } catch (err) {
-      setError(err.message);
-      console.error(`Error al editar propiedad ${editingId}:`, err);
+      setFormTitulo("Editar Propiedad");
+      setFormVisible(true);
+    } catch (error) {
+      console.error("Error al cargar propiedad:", error);
+      alert("Error al cargar propiedad para editar");
     }
   };
 
-  // Handler para eliminar
-  const handleEliminarClick = async (id) => {
-    if (window.confirm('¿Seguro que deseas eliminar esta propiedad?')) {
-      try {
-        const response = await fetch(`${API_BASE}/${id}`, {
-          method: 'DELETE',
-        });
+  // Eliminar propiedad
+  const eliminarPropiedad = async (id) => {
+    if (!window.confirm(`¿Estás seguro de que deseas eliminar la propiedad con ID ${id}?`)) return;
 
-        if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(`Error al eliminar propiedad ${id}: ${JSON.stringify(errorData)}`);
-        }
-
-        fetchData(); // Recargar datos después de eliminar
-      } catch (err) {
-        setError(err.message);
-        console.error(`Error al eliminar propiedad ${id}:`, err);
-      }
+    try {
+      const res = await fetch(`${API_BASE}/${id}`, { method: "DELETE" });
+      if (!res.ok) throw new Error("Error al eliminar propiedad");
+      alert("Propiedad eliminada");
+      cargarPropiedades();
+    } catch (error) {
+      console.error("Error al eliminar propiedad:", error);
+      alert("Error al eliminar propiedad");
     }
   };
 
-  if (loading) {
+  const propiedadesFiltradas = propiedades.filter((prop) => {
+    const term = searchTerm.toLowerCase();
     return (
-      <div className="flex justify-center items-center h-screen">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500 mx-auto"></div>
-          <p className="mt-4">Cargando datos...</p>
-        </div>
-      </div>
+      prop.direccion.toLowerCase().includes(term) ||
+      prop.tipo.nombreTipoPropiedad.toLowerCase().includes(term) ||
+      prop.operacion.nombreOperacion.toLowerCase().includes(term)
     );
-  }
-
-  if (error) {
-    return (
-      <div className="bg-red-100 p-4 rounded-md mx-4 my-6">
-        <p className="text-red-700">{error}</p>
-        <button
-          className="mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-          onClick={fetchData}
-        >
-          Reintentar
-        </button>
-      </div>
-    );
-  }
+  });
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      {/* Gráfica de Rangos de Precio */}
-      <div className="bg-white p-6 rounded-lg shadow-md mb-8">
-        <h3 className="text-lg font-semibold mb-4">Distribución por Rangos de Precio</h3>
-        <div style={{ width: '100%', height: '300px' }}>
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={dashboardData?.rangosPrecios || []}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="rango" />
-              <YAxis />
-              <Tooltip />
-              <Legend />
-              <Bar dataKey="cantidad" fill="#ff7c7c" name="Cantidad de Propiedades" />
-            </BarChart>
-          </ResponsiveContainer>
+    <div className="gestion-propiedades">
+      <h1 className="main-title">Administración de Propiedades</h1>
+
+      {/* Barra de búsqueda */}
+      <div className="search-container">
+        <div className="search-wrapper">
+          <Search className="search-icon" />
+          <input
+            type="text"
+            placeholder="Buscar por dirección, tipo de propiedad o operación..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="search-input"
+          />
         </div>
       </div>
 
-      {/* Tabla de Propiedades Recientes */}
-      <div className="bg-white p-6 rounded-lg shadow-md">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold flex items-center">
-            <Clock className="mr-2" size={20} />
-            Propiedades Registradas Recientemente
-          </h3>
-          <button
-            className="flex items-center bg-blue-500 text-#343a40 px-4 py-2 rounded hover:bg-blue-600  background-color:#A94442"
-            onClick={handleAgregarClick}
-          >
-            <Plus className="mr-2" size={18} />
-            Agregar Propiedad
-          </button>
-        </div>
-        <div className="overflow-x-auto">
-          <table className="min-w-full">
-            <thead className="bg-gray-100">
-              <tr>
-                {/*<th className="py-3 px-4 text-left text-sm font-medium text-gray-600">ID</th>*/}
-                <th className="py-3 px-4 text-left text-sm font-medium text-gray-600">Dirección</th>
-                <th className="py-3 px-4 text-left text-sm font-medium text-gray-600">Tipo</th>
-                <th className="py-3 px-4 text-left text-sm font-medium text-gray-600">Operación</th>
-                <th className="py-3 px-4 text-left text-sm font-medium text-gray-600">Estado</th>
-                <th className="py-3 px-4 text-left text-sm font-medium text-gray-600">Precio</th>
-                <th className="py-3 px-4 text-center text-sm font-medium text-gray-600">Acciones</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200">
-              {dashboardData?.propiedadesRecientes?.length ? (
-                dashboardData.propiedadesRecientes.map((propiedad) => (
-                  <tr key={propiedad.id} className="hover:bg-gray-50">
-                   {/* <td className="py-4 px-4 text-sm">{propiedad.id}</td>*/}
-                    <td className="py-4 px-4 text-sm">{propiedad.direccion}</td>
-                    <td className="py-4 px-4 text-sm">{propiedad?.tipo?.nombre}</td>
-                    <td className="py-4 px-4 text-sm">{propiedad?.operacion?.nombre}</td>
-                    <td className="py-4 px-4 text-sm">
-                      <span className={`px-2 py-1 rounded-full text-xs ${
-                        propiedad?.estado?.nombre?.toLowerCase()?.includes('disponible')
-                          ? 'bg-green-100 text-green-800'
-                          : 'bg-red-100 text-red-800'
-                      }`}>
-                        {propiedad?.estado?.nombre}
-                      </span>
-                    </td>
-                    <td className="py-4 px-4 text-sm font-semibold">
-                      {formatCurrency(propiedad.precio)}
-                    </td>
-                    <td className="py-4 px-4 text-center">
-                      <button
-                        className="inline-flex items-center text-blue-500 hover:text-blue-700 mr-2"
-                        title="Editar"
-                        onClick={() => handleEditarClick(propiedad.id)}
-                      >
-                        <Edit size={18} />
-                      </button>
-                      <button
-                        className="inline-flex items-center text-red-500 hover:text-red-700"
-                        title="Eliminar"
-                        onClick={() => handleEliminarClick
-                          (propiedad.id)}
-                      >
-                        <Trash2 size={18} />
-                      </button>
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan="7" className="py-4 px-4 text-center text-gray-500">
-                    No hay propiedades registradas
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
+      {/* Botón crear propiedad */}
+      <div className="action-bar">
+        <button onClick={mostrarFormulario} className="btn-primary">
+          Añadir Propiedad
+        </button>
       </div>
 
-      {/* Modal para Agregar/Editar Propiedad */}
-      {(isAdding || editingId) && (
-        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center">
-          <div className="bg-white rounded-lg shadow-xl p-8">
-            <h2 className="text-lg font-semibold mb-4">{editingId ? 'Editar Propiedad' : 'Agregar Nueva Propiedad'}</h2>
-            <div className="mb-4">
-              <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="direccion">
-                Dirección:
-              </label>
-              <input
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                id="direccion"
-                type="text"
-                name="direccion"
-                value={editingId ? editingPropiedad?.direccion : newPropiedad.direccion}
-                onChange={editingId ? handleEditarInputChange : handleAgregarInputChange}
-              />
+      {/* Modal del formulario */}
+      {formVisible && (
+        <div 
+          className="modal-overlay"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) {
+              setFormVisible(false);
+            }
+          }}
+        >
+          <div className="modal-content">
+            <div className="modal-header">
+              <h2 className="modal-title">{formTitulo}</h2>
             </div>
-            <div className="mb-4">
-              <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="precio">
-                Precio:
-              </label>
-              <input
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                id="precio"
-                type="number"
-                name="precio"
-                value={editingId ? editingPropiedad?.precio : newPropiedad.precio}
-                onChange={editingId ? handleEditarInputChange : handleAgregarInputChange}
-              />
-            </div>
-            <div className="mb-4">
-              <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="tipo.id">
-                Tipo de Propiedad:
-              </label>
-              <select
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                id="tipo.id"
-                name="tipo.id"
-                value={editingId ? editingPropiedad?.tipo?.id : newPropiedad.tipo.id}
-                onChange={editingId ? handleEditarInputChange : handleAgregarInputChange}
-              >
-                {tiposPropiedad.map((tipo) => (
-                  <option key={tipo.idTipo} value={tipo.idTipo}>
-                    {tipo.nombreTipoPropiedad}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className="mb-4">
-              <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="operacion.id">
-                Operación:
-              </label>
-              <select
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                id="operacion.id"
-                name="operacion.id"
-                value={editingId ? editingPropiedad?.operacion?.id : newPropiedad.operacion.id}
-                onChange={editingId ? handleEditarInputChange : handleAgregarInputChange}
-              >
-                {operaciones.map((operacion) => (
-                  <option key={operacion.idOperacion} value={operacion.idOperacion}>
-                    {operacion.nombreOperacion}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className="mb-4">
-              <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="estado.id">
-                Estado:
-              </label>
-              <select
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                id="estado.id"
-                name="estado.id"
-                value={editingId ? editingPropiedad?.estado?.id : newPropiedad.estado.id}
-                onChange={editingId ? handleEditarInputChange : handleAgregarInputChange}
-              >
-                {estadosPropiedad.map((estado) => (
-                  <option key={estado.idEstado} value={estado.idEstado}>
-                    {estado.nombreEstadoPropiedad}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className="mb-4">
-              <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="latitud">
-                Latitud:
-              </label>
-              <input
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                id="latitud"
-                type="number"
-                name="latitud"
-                value={editingId ? editingPropiedad?.latitud : newPropiedad.latitud}
-                onChange={editingId ? handleEditarInputChange : handleAgregarInputChange}
-              />
-            </div>
-            <div className="mb-4">
-              <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="longitud">
-                Longitud:
-              </label>
-              <input
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                id="longitud"
-                type="number"
-                name="longitud"
-                value={editingId ? editingPropiedad?.longitud : newPropiedad.longitud}
-                onChange={editingId ? handleEditarInputChange : handleAgregarInputChange}
-              />
-            </div>
-            <div className="mb-4">
-              <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="idVendedor">
-                ID Vendedor:
-              </label>
-              <input
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                id="idVendedor"
-                type="number"
-                name="idVendedor"
-                value={editingId ? editingPropiedad?.idVendedor : newPropiedad.idVendedor}
-                onChange={editingId ? handleEditarInputChange : handleAgregarInputChange}
-              />
-            </div>
-            <div className="flex justify-end">
-              <button
-                className="bg-gray-300 text-gray-700 px-4 py-2 rounded mr-2 hover:bg-gray-400"
-                onClick={() => {
-                  setIsAdding(false);
-                  setEditingId(null);
-                  setEditingPropiedad(null);
-                }}
-              >
-                Cancelar
-              </button>
-              <button
-                className={`px-4 py-2 rounded ${editingId ? 'bg-blue-500 hover:bg-blue-600 text-white' : 'bg-green-500 hover:bg-green-600 text-white'}`}
-                onClick={editingId ? handleGuardarEdicion : handleGuardarNuevaPropiedad}
-              >
-                {editingId ? 'Guardar Cambios' : 'Guardar'}
-              </button>
+            <div className="modal-body">
+              <form onSubmit={submitFormulario}>
+                <input type="hidden" id="idPropiedad" value={formData.idPropiedad} />
+
+                <div className="form-group">
+                  <label htmlFor="direccion" className="form-label">
+                    Dirección
+                  </label>
+                  <input
+                    type="text"
+                    id="direccion"
+                    required
+                    value={formData.direccion}
+                    onChange={handleChange}
+                    className="form-input"
+                    placeholder="Ingrese la dirección de la propiedad"
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="precio" className="form-label">
+                    Precio
+                  </label>
+                  <input
+                    type="number"
+                    id="precio"
+                    required
+                    value={formData.precio}
+                    onChange={handleChange}
+                    className="form-input"
+                    placeholder="Ingrese el precio"
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="tipo" className="form-label">
+                    Tipo de Propiedad
+                  </label>
+                  <select
+                    id="tipo"
+                    required
+                    value={formData.tipo}
+                    onChange={handleChange}
+                    className="form-select"
+                  >
+                    {tipos.map((t) => (
+                      <option key={t.idTipo} value={t.idTipo}>
+                        {t.nombreTipoPropiedad}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="operacion" className="form-label">
+                    Tipo de Operación
+                  </label>
+                  <select
+                    id="operacion"
+                    required
+                    value={formData.operacion}
+                    onChange={handleChange}
+                    className="form-select"
+                  >
+                    {operaciones.map((o) => (
+                      <option key={o.idOperacion} value={o.idOperacion}>
+                        {o.nombreOperacion}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="estado" className="form-label">
+                    Estado
+                  </label>
+                  <select
+                    id="estado"
+                    required
+                    value={formData.estado}
+                    onChange={handleChange}
+                    className="form-select"
+                  >
+                    {estados.map((e) => (
+                      <option key={e.idEstado} value={e.idEstado}>
+                        {e.nombreEstadoPropiedad}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="latitud" className="form-label">
+                    Latitud
+                  </label>
+                  <input
+                    type="number"
+                    id="latitud"
+                    value={formData.latitud}
+                    onChange={handleChange}
+                    step="any"
+                    className="form-input"
+                    placeholder="Coordenada de latitud"
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="longitud" className="form-label">
+                    Longitud
+                  </label>
+                  <input
+                    type="number"
+                    id="longitud"
+                    value={formData.longitud}
+                    onChange={handleChange}
+                    step="any"
+                    className="form-input"
+                    placeholder="Coordenada de longitud"
+                  />
+                </div>
+
+                <div className="form-actions">
+                  <button type="submit" className="btn-primary">
+                    Guardar
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setFormVisible(false)}
+                    className="btn-secondary"
+                  >
+                    Cancelar
+                  </button>
+                </div>
+              </form>
             </div>
           </div>
         </div>
       )}
+
+      {/* Tabla de propiedades */}
+      <div className="table-container">
+        <table className="modern-table">
+          <thead className="table-header">
+            <tr>
+              <th>Dirección</th>
+              <th>Precio</th>
+              <th>Tipo</th>
+              <th>Operación</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {propiedadesFiltradas.length > 0 ? (
+              propiedadesFiltradas.map((p) => (
+                <tr key={p.idPropiedad} className="table-row">
+                  <td className="table-cell">{p.direccion}</td>
+                  <td className="table-cell">
+                    ${p.precio?.toLocaleString('es-CO')}
+                  </td>
+                  <td className="table-cell">{p.tipo?.nombreTipoPropiedad}</td>
+                  <td className="table-cell">{p.operacion?.nombreOperacion}</td>
+                  <td className="table-cell">{p.estado?.nombreEstadoPropiedad}</td>
+                  <td className="table-cell">
+                    <div className="action-buttons">
+                      <button
+                        onClick={() => editarPropiedad(p.idPropiedad)}
+                        className="btn-edit"
+                      >
+                        Editar
+                      </button>
+                      <button
+                        onClick={() => eliminarPropiedad(p.idPropiedad)}
+                        className="btn-delete"
+                      >
+                        Eliminar
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan={6} className="table-cell">
+                  <div className="empty-state">
+                    <div className="empty-state-title">
+                      No hay propiedades disponibles
+                    </div>
+                    <div className="empty-state-description">
+                      {searchTerm 
+                        ? "No se encontraron propiedades que coincidan con tu búsqueda"
+                        : "Comienza agregando tu primera propiedad"
+                      }
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }
-
