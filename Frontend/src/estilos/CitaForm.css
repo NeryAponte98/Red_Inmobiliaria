@@ -1,0 +1,280 @@
+.cita-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #D3CBB8 0%, #94716B 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Tarjeta del formulario */
+.cita-form-card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  padding: 40px;
+  width: 100%;
+  max-width: 500px;
+  position: relative;
+  overflow: hidden;
+}
+
+.cita-form-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 5px;
+  background: linear-gradient(90deg, #D3CBB8, #94716B, #6f534e);
+}
+
+/* Título */
+.cita-title {
+  color: #000000;
+  font-size: 2rem;
+  font-weight: 800;
+  text-align: center;
+  margin-bottom: 30px;
+  position: relative;
+}
+
+.cita-title::after {
+  content: '';
+  display: block;
+  width: 60px;
+  height: 3px;
+  background: linear-gradient(90deg, #94716B, #6f534e);
+  margin: 10px auto;
+  border-radius: 2px;
+}
+
+/* Formulario */
+.cita-form {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+/* Grupos de campos */
+.field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Labels */
+.field-label {
+  color: #000000;
+  font-weight: 600;
+  font-size: 0.95rem;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  margin-bottom: 5px;
+}
+
+/* Textos informativos */
+.field-text {
+  background: white;
+  padding: 15px 20px;
+  border-radius: 12px;
+  color: #3d2e0b;
+  font-weight: 600;
+  font-size: 1.1rem;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.field-text::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background:  #8b6d50;
+  border-radius: 12px;
+  padding: 2px;
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: subtract;
+  opacity: 0.8;
+  transition: opacity 0.3s ease;
+}
+
+.field-text:hover::before {
+  opacity: 0.6;
+}
+
+.datetime-input {
+  padding: 16px 20px;
+  border: 2px solid #997859;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #2d3748;
+  background: white;
+  transition: all 0.3s ease;
+  outline: none;
+  position: relative;
+  opacity: 0.8;
+}
+
+.datetime-input:focus {
+  border-color: #b4948e;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  transform: translateY(-2px);
+}
+
+.datetime-input:hover {
+  border-color: #b4948e;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+/* Botón de guardar */
+.save-button {
+  background: linear-gradient(135deg, #94716B, #543f1d);
+  color: white;
+  border: none;
+  padding: 18px 32px;
+  border-radius: 12px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  margin-top: 10px;
+}
+
+.save-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+.save-button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+}
+
+.save-button:hover::before {
+  left: 100%;
+}
+
+.save-button:active {
+  transform: translateY(-1px);
+}
+
+/* Estados de carga */
+.loading {
+  color: #6d7279;
+  font-style: italic;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+/* Iconos decorativos */
+.field-group::before {
+  content: '📅';
+  font-size: 1.2rem;
+  margin-right: 8px;
+  opacity: 0.7;
+}
+
+.field-group:first-child::before {
+  content: '👤';
+}
+
+.field-group:nth-child(2)::before {
+  content: '🏠';
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .cita-container {
+    padding: 15px;
+  }
+  
+  .cita-form-card {
+    padding: 30px 25px;
+  }
+  
+  .cita-title {
+    font-size: 1.7rem;
+  }
+  
+  .datetime-input,
+  .save-button {
+    padding: 14px 18px;
+  }
+}
+
+/* Animaciones de entrada */
+.cita-form-card {
+  animation: slideUp 0.6s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Efectos adicionales */
+.field-text,
+.datetime-input {
+  animation: fadeIn 0.8s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Estilo para mensajes de error (opcional) */
+.error-message {
+  background: #fed7d7;
+  color: #c53030;
+  padding: 12px 16px;
+  border-radius: 8px;
+  border-left: 4px solid #e53e3e;
+  font-weight: 500;
+  margin-top: 10px;
+}
+
+/* Estilo para mensajes de éxito (opcional) */
+.success-message {
+  background: #c6f6d5;
+  color: #276749;
+  padding: 12px 16px;
+  border-radius: 8px;
+  border-left: 4px solid #38a169;
+  font-weight: 500;
+  margin-top: 10px;
+}

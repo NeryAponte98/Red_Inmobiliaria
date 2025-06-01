@@ -11,6 +11,11 @@ import Inicio from './vistas/Inicio';
 import Logout from './vistas/Logout';
 import Favoritos from './vistas/Favoritos';
 import Login from './vistas/Login';
+import CrearCita from './componentes/CrearCita';
+import PanelPrincipal from './componentes/PanelPrincipal';
+import VerCita from './componentes/VerCita';
+
+
 
 function App() {
   // Configurar interceptores de Axios al cargar la aplicación
@@ -34,8 +39,9 @@ function App() {
         
         {/* Rutas protegidas dentro del Layout */}
         <Route element={<ProtectedRoute><Layout /></ProtectedRoute>}>
-          <Route path="/inicio" element={<Inicio />} />
-          <Route path="/citas" element={<Citas />} />
+          <Route path="/inicio" element={<PanelPrincipal />} />
+          <Route path="/citas" element={<VerCita />} />
+          <Route path="/crear-cita/:idPropiedad" element={<CrearCita />} />
           <Route path="/propiedades" element={<Propiedades />} />
           {/* Ruta protegida con rol específico */}
           <Route path="/usuarios" element={

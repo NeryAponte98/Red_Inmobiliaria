@@ -1,12 +1,12 @@
 import React from 'react';
+import PanelPrincipal from '../componentes/PanelPrincipal';
 
-const Inicio = () => {
+function Inicio() {
   return (
     <div>
-      <h1>Página de Inicio</h1>
-      <p>Bienvenido a la Red Inmobiliaria</p>
+      <PanelPrincipal />
     </div>
   );
-};
+}
 
 export default Inicio;

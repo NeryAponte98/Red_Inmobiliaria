@@ -1,12 +1,12 @@
 import React from 'react';
+import CrearCita from '../componentes/CrearCita';
 
-const Citas = () => {
+function App() {
   return (
     <div>
-      <h1>Citas</h1>
-      <p>Gestión de citas</p>
+      <VerCita />
     </div>
   );
-};
+}
 
-export default Citas;
+export default App;
