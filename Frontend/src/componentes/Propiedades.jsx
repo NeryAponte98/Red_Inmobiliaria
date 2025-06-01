@@ -307,7 +307,7 @@ export default function DashboardInmobiliario() {
           <table className="min-w-full">
             <thead className="bg-gray-100">
               <tr>
-                <th className="py-3 px-4 text-left text-sm font-medium text-gray-600">ID</th>
+                {/*<th className="py-3 px-4 text-left text-sm font-medium text-gray-600">ID</th>*/}
                 <th className="py-3 px-4 text-left text-sm font-medium text-gray-600">Dirección</th>
                 <th className="py-3 px-4 text-left text-sm font-medium text-gray-600">Tipo</th>
                 <th className="py-3 px-4 text-left text-sm font-medium text-gray-600">Operación</th>
@@ -320,7 +320,7 @@ export default function DashboardInmobiliario() {
               {dashboardData?.propiedadesRecientes?.length ? (
                 dashboardData.propiedadesRecientes.map((propiedad) => (
                   <tr key={propiedad.id} className="hover:bg-gray-50">
-                    <td className="py-4 px-4 text-sm">{propiedad.id}</td>
+                   {/* <td className="py-4 px-4 text-sm">{propiedad.id}</td>*/}
                     <td className="py-4 px-4 text-sm">{propiedad.direccion}</td>
                     <td className="py-4 px-4 text-sm">{propiedad?.tipo?.nombre}</td>
                     <td className="py-4 px-4 text-sm">{propiedad?.operacion?.nombre}</td>

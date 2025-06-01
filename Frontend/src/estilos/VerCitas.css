@@ -221,7 +221,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.6);
+  background: rgba(159, 157, 157, 0.6);
   backdrop-filter: blur(5px);
   display: flex;
   align-items: center;
@@ -231,7 +231,7 @@
 }
 
 .modal-content {
-  background: white;
+  background: white !important;
   border-radius: 20px;
   padding: 40px;
   width: 90%;
@@ -248,7 +248,7 @@
   left: 0;
   right: 0;
   height: 5px;
-  background: linear-gradient(90deg, rgb(154, 103, 55), #6e4113);
+  background: linear-gradient(90deg, rgb(202, 169, 138), #6e4113);
   border-radius: 20px 20px 0 0;
 }
 
@@ -262,9 +262,10 @@
 
 .modal-label {
   display: block;
-  color: #4a5568;
+  color: #000000;
   font-weight: 600;
-  margin-bottom: 10px;
+  margin-bottom: 15px;
+  margin-top: 20px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
   font-size: 0.9rem;
