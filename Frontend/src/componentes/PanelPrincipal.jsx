@@ -2,6 +2,8 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../estilos/PanelPrincipal.css';
+import Map from '../servicios/map.jsx'
+import 'leaflet/dist/leaflet.css';
 
 
 async function obtenerImagenDePropiedad(idPropiedad) {
@@ -105,8 +107,12 @@ function PanelPrincipal() {
           <p>No hay propiedades disponibles en este momento</p>
         </div>
       )}
+      <div style={{ marginTop: '20px' }}>
+        <Map />
+      </div>
     </div>
   );
+  
 }
 
 export default PanelPrincipal;
