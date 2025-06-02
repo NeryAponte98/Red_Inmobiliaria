@@ -1,32 +1,37 @@
 import "../estilos/map.css";
 import "leaflet/dist/leaflet.css";
 
+import { useEffect, useState } from "react";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import { Icon } from "leaflet";
 
-// Ícono personalizado
+// marker icon
 const customIcon = new Icon({
   iconUrl: "https://images.icon-icons.com/1077/PNG/512/placeholder_77927.png",
   iconSize: [38, 38],
 });
 
-// Lista de marcadores
-const markers = [
-  {
-    geocode: [7.117461143167635, -73.11254869038605],
-    popUp: "Inmueble 1"
-  },
-  {
-    geocode: [7.119, -73.114],
-    popUp: "Inmueble 2"
-  },
-  {
-    geocode: [7.115, -73.110],
-    popUp: "Inmueble 3"
-  }
-];
 
 export default function Map() {
+  const [propiedades, setPropiedades] = useState([]);
+  
+ // Cargar propiedades desde el backend al montar el componente
+  useEffect(() => {
+    fetch("http://localhost:8094/api/propiedades")
+      .then((res) => res.json())
+      .then((data) => {
+
+        const propiedadesConUbicacion = data.filter(
+          (p) => p.latitud && p.longitud
+        );
+        setPropiedades(propiedadesConUbicacion);
+      })
+      .catch((err) => {
+        console.error("Error al cargar propiedades:", err);
+      });
+  }, []);
+  
+  
   return (
     <MapContainer center={[7.117461143167635, -73.11254869038605]} zoom={13} style={{ height: "400px", width: "100%" }}>
       {/* Mapa base de OpenStreetMap */}
@@ -35,10 +40,18 @@ export default function Map() {
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
 
-      {/* Marcadores individuales sin clustering */}
-      {markers.map((marker, index) => (
-        <Marker key={index} position={marker.geocode} icon={customIcon}>
-          <Popup>{marker.popUp}</Popup>
+      {/* Marcadores dinámicos desde el backend */}
+      {propiedades.map((propiedad) => (
+        <Marker
+          key={propiedad.idPropiedad}
+          position={[propiedad.latitud, propiedad.longitud]}
+          icon={customIcon}
+        >
+          <Popup>
+            <strong>{propiedad.direccion}</strong>
+            <br />
+            Precio: ${propiedad.precio}
+          </Popup>
         </Marker>
       ))}
     </MapContainer>

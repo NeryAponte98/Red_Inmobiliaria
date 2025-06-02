@@ -7,7 +7,7 @@
 
 .gestion-propiedades {
   font-family: 'Inter', 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  background: linear-gradient(135deg, #8B4513 0%, #ce8856 50%, #F5DEB3 100%);
+  background: linear-gradient(135deg, #8b4513b8 0%, #ce8856a4 50%, #F5DEB3 100%);
   min-height: 100vh;
   color: #3E2723;
   line-height: 1.6;
@@ -19,6 +19,7 @@
   max-width: 1400px;
   margin: 0 auto;
 }
+
 
 /* Título principal */
 .main-title {
@@ -35,7 +36,7 @@
 
 /* Barra de búsqueda mejorada */
 .search-container {
-  background: #FAEBD7;
+  background: #e3cfb490;
   border-radius: 1rem;
   box-shadow: 0 10px 15px -3px rgba(139, 69, 19, 0.1), 0 4px 6px -4px rgba(139, 69, 19, 0.1);
   padding: 2rem;
