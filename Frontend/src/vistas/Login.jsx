@@ -3,6 +3,9 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import logo from '../assets/logo.png';
+import { 
+  parseJwt
+} from '../servicios/AuthServices.js';
 
 // URL base para las peticiones API
 const API_URL = "http://localhost:8094/api/auth";
@@ -38,13 +41,16 @@ const Login = () => {
                 password
             });
             
-            // Guardar token JWT en localStorage
-            localStorage.setItem('token', response.data.token);
+            const token = response.data.token;
+            const decodedToken = parseJwt(token);
+
+            // Guardar token y datos del usuario extraídos del token
+            localStorage.setItem('token', token);
             localStorage.setItem('user', JSON.stringify({
-                id: response.data.id,
-                username: response.data.username,
-                email: response.data.email,
-                role: response.data.role
+                id: decodedToken?.id,
+                username: decodedToken?.sub,
+                tipoUsuario: decodedToken?.tipoUsuario,
+                tipoUsuarioId: decodedToken?.tipoUsuarioId
             }));
             
             // Redirigir al usuario a la página de inicio
@@ -217,8 +223,8 @@ const Login = () => {
                                 disabled={loading}
                             >
                                 <option value="1">Administrador</option>
-                                <option value="2">Cliente</option>
-                                <option value="3">Agente Inmobiliario</option>
+                                <option value="2">Vendedor</option>
+                                <option value="3">Cliente</option>
                             </select>
                         </div>
                         

@@ -60,10 +60,20 @@ const Navbar = ({ isOpen, toggleSidebar }) => {
         <li className="sidebar-item">
           <NavLink 
             className={({isActive}) => isActive ? "sidebar-link active" : "sidebar-link"} 
-            to="/usuarios"
+            to="/mi-perfil"
           >
             <i className="bi bi-person-badge me-2"></i>
             <span>Mi perfil</span>
+          </NavLink>
+        </li>
+
+        <li className="sidebar-item">
+          <NavLink 
+            className={({isActive}) => isActive ? "sidebar-link active" : "sidebar-link"} 
+            to="/usuarios"
+          >
+            <i className="bi bi-people me-2"></i>
+            <span>Usuarios</span>
           </NavLink>
         </li>
 

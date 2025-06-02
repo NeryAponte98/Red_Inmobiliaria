@@ -43,6 +43,29 @@ export const cargarDatosUsuario = async (userId) => {
   }
 };
 
+export const cargarTodosUsuarios = async () => {
+  try {
+    const token = localStorage.getItem("token");
+    const response = await fetch(`http://localhost:8094/api/usuario/list`, {
+      method: "GET",
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json"
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error("Error al cargar los datos del usuario");
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("Error al obtener los datos del usuario:", error);
+    throw error;
+  }
+};
+
+
 // API para actualizar datos del usuario
 export const actualizarDatosUsuario = async (userId, datosActualizados) => {
   try {
