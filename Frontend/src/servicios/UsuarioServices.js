@@ -151,4 +151,95 @@ export const eliminarCuentaUsuario = async (userId, password) => {
     console.error("Error al eliminar la cuenta:", error);
     throw error;
   }
+
 };
+
+export const eliminarUsuarioComoAdmin = async (userId) => {
+  try {
+    const token = localStorage.getItem("token");
+    const response = await fetch(`http://localhost:8094/api/usuario/admin/${userId}`, {
+      method: "DELETE",
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json",
+      }
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Error al eliminar el usuario");
+    }
+
+    return true;
+  } catch (error) {
+    console.error("Error al eliminar usuario como admin:", error);
+    throw error;
+  }
+};
+
+// Agregar esta función a tu archivo usuarioServices.js
+
+export const registrarNuevoUsuario = async (datosUsuario) => {
+  const token = localStorage.getItem("token");
+
+  try {
+    console.log("Enviando datos al servidor:", datosUsuario); // Debug
+
+    const response = await fetch(`http://localhost:8094/api/auth/register`, {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(datosUsuario)
+    });
+
+    console.log("Status de respuesta:", response.status); // Debug
+    console.log("Headers de respuesta:", response.headers.get('content-type')); // Debug
+
+    // Verificar si la respuesta es JSON válido
+    const contentType = response.headers.get('content-type');
+    
+    if (!response.ok) {
+      let errorMessage = "No se pudo registrar el usuario.";
+      
+      if (contentType && contentType.includes('application/json')) {
+        try {
+          const errorData = await response.json();
+          errorMessage = errorData.message || errorData.error || errorMessage;
+        } catch (jsonError) {
+          console.error("Error al parsear JSON de error:", jsonError);
+        }
+      } else {
+        // Si no es JSON, obtener el texto plano
+        const errorText = await response.text();
+        console.error("Respuesta de error (no JSON):", errorText);
+        errorMessage = `Error del servidor (${response.status}): ${errorText}`;
+      }
+      
+      throw new Error(errorMessage);
+    }
+
+    // Verificar si la respuesta exitosa es JSON
+    if (contentType && contentType.includes('application/json')) {
+      return await response.json();
+    } else {
+      // Si no es JSON, devolver un objeto de éxito
+      const responseText = await response.text();
+      console.log("Respuesta exitosa (no JSON):", responseText);
+      return { success: true, message: "Usuario registrado correctamente" };
+    }
+
+  } catch (error) {
+    console.error("Error completo en registrarNuevoUsuario:", error);
+    
+    // Si es un error de red o parsing
+    if (error.name === 'TypeError' || error.message.includes('JSON')) {
+      throw new Error("Error de conexión con el servidor. Verifica tu conexión.");
+    }
+    
+    throw error;
+  }
+};
+
+
