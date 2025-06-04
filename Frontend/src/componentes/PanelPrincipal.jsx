@@ -5,21 +5,55 @@ import '../estilos/PanelPrincipal.css';
 import Map from '../servicios/map.jsx'
 import 'leaflet/dist/leaflet.css';
 
+function CarruselImagenes({ imagenes }) {
+  const [index, setIndex] = useState(0);
+  if (!imagenes || imagenes.length === 0) {
+    imagenes = ["/assets/default.jpg"];
+  }
 
-async function obtenerImagenDePropiedad(idPropiedad) {
+  const siguiente = (e) => {
+    e.stopPropagation();
+    setIndex((prev) => (prev + 1) % imagenes.length);
+  };
+  const anterior = (e) => {
+    e.stopPropagation();
+    setIndex((prev) => (prev - 1 + imagenes.length) % imagenes.length);
+  };
+
+  return (
+    <div className="carrusel-imagenes">
+      <button className="carrusel-btn carrusel-btn--left" onClick={anterior} disabled={imagenes.length === 1}>&lt;</button>
+      <img
+        src={imagenes[index]}
+        alt="Propiedad"
+        className="propiedad-imagen"
+        onError={(e) => { e.target.src = "/assets/default.jpg"; }}
+      />
+      <button className="carrusel-btn carrusel-btn--right" onClick={siguiente} disabled={imagenes.length === 1}>&gt;</button>
+    </div>
+  );
+}
+
+async function obtenerImagenesDePropiedad(idPropiedad) {
   try {
     const response = await fetch(`http://localhost:8094/api/imagenPropiedad/propiedad/${idPropiedad}`);
-    if (response.status === 404) {
-      // Imagen no encontrada, usar una por defecto sin imprimir errores
-      return "/assets/default.jpg";
-    }
     if (!response.ok) {
-      return "/assets/default.jpg";
+      return ["/assets/default.jpg"];
     }
-    return await response.text();
+    const data = await response.json();
+    if(data.length>0 && Array.isArray(data)){
+      return data.map(img =>
+          img.urlImagen.startsWith('http')
+            ? img.urlImagen
+            : `http://localhost:8094${img.urlImagen}`
+        );
+      
+    } else {
+        return ["/assets/default.jpg"];
+    }
   } catch (error) {
     console.warn(`Error al conectar con el backend para imagen ${idPropiedad}:`, error.message);
-    return "/assets/default.jpg";
+    return ["/assets/default.jpg"];
   }
 }
 
@@ -33,14 +67,14 @@ function PanelPrincipal() {
       const res = await fetch("http://localhost:8094/api/propiedades");
       const data = await res.json();
 
-      const propiedadesConImagen = await Promise.all(
+      const propiedadesConImagenes = await Promise.all(
         data.map(async (prop) => {
-          const imagenURL = await obtenerImagenDePropiedad(prop.idPropiedad);
-          return { ...prop, imagenURL };
+          const imagenes = await obtenerImagenesDePropiedad(prop.idPropiedad);
+          return { ...prop, imagenes };
         })
       );
 
-      setPropiedades(propiedadesConImagen);
+      setPropiedades(propiedadesConImagenes);
     } catch (error) {
       console.error("Error cargando propiedades:", error);
     }
@@ -71,14 +105,9 @@ function PanelPrincipal() {
           {propiedades.map((prop) => (
             <div key={prop.idPropiedad} className="propiedad-card">
               <div className="imagen-container">
-                <img 
-                  src={prop.imagenURL} 
-                  alt="Propiedad" 
-                  className="propiedad-imagen"
-                  onError={(e) => {e.target.src = "/assets/default.jpg"}}
-                />
-                <div className="imagen-overlay"></div>
-                <div className="tipo-badge">
+                <CarruselImagenes imagenes={prop.imagenes} />{}
+                <div className='image-overlay'></div>
+                <div className='tipo-badge'>
                   {prop.operacion?.nombreOperacion || "Disponible"}
                 </div>
               </div>
