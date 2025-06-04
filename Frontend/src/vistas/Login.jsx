@@ -222,8 +222,7 @@ const Login = () => {
                                 required
                                 disabled={loading}
                             >
-                                <option value="1">Administrador</option>
-                                <option value="2">Vendedor</option>
+                                <option value="">Seleccione un tipo...</option>
                                 <option value="3">Cliente</option>
                             </select>
                         </div>
