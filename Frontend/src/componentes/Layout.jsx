@@ -23,7 +23,7 @@ const Layout = () => {
             <i className={`bi ${sidebarOpen ? 'bi-arrow-left' : 'bi-list'}`}></i>
           </button>
           <div className="user-info">
-            <span className="user-name">Administrador</span>
+            <span className="user-name"></span>
             {/*img src="/api/placeholder/40/40" alt="User" className="user-avatar" />*/}
           </div>
         </header>

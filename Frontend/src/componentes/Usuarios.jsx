@@ -233,7 +233,7 @@ export default function GestionUsuarios() {
                     className="btn-edit"
                     onClick={() => mostrarFormularioEditar(usuario)}
                   >
-                    Editar
+                    Eliminar
                   </button>
                 </td>
               </tr>
@@ -246,7 +246,7 @@ export default function GestionUsuarios() {
         <div className="modal-overlay">
           <div className="modal-content">
             <div className="modal-header">
-              <h2 className="modal-title">{formTitulo}</h2>
+              <h2 className="modal-title">Datos de usuario</h2>
             </div>
             <div className="modal-body">
               <form onSubmit={handleSubmit}>

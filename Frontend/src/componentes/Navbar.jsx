@@ -47,15 +47,6 @@ const Navbar = ({ isOpen, toggleSidebar }) => {
           </NavLink>
         </li>
 
-        <li className="sidebar-item">
-          <NavLink 
-            className={({isActive}) => isActive ? "sidebar-link active" : "sidebar-link"} 
-            to="/favoritos"
-          >
-            <i className="bi bi-heart me-2"></i>
-            <span>Favoritos</span>
-          </NavLink>
-        </li>
 
         <li className="sidebar-item">
           <NavLink 

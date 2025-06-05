@@ -7,7 +7,6 @@ import Layout from './componentes/Layout';
 import Propiedades from './vistas/Propiedades';
 import MiPerfil from './vistas/MiPerfil';
 import Logout from './vistas/Logout';
-import Favoritos from './vistas/Favoritos';
 import Login from './vistas/Login';
 import NoAutorizado from './componentes/NoAutorizado';
 import CrearCita from './componentes/CrearCita';
@@ -55,9 +54,7 @@ function App() {
               <Usuarios />
             </ProtectedRoute>
           } />
-          
-          <Route path="/favoritos" element={<Favoritos />} />
-          
+                    
           {/* Ruta para manejar acceso no autorizado */}
           <Route path="/no-autorizado" element={<NoAutorizado />} />
           

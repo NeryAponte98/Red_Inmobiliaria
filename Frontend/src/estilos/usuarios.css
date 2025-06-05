@@ -15,6 +15,9 @@
     width: 100%;
 }
 
+.main-title{
+    background-color: black;
+}
 /* Secciones del perfil */
 .profile-section {
     background-color: #ffffff;
