@@ -1,12 +1,27 @@
-# React + Vite
+# 🏠 RedInmobiliaria 
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Plataforma web de conexión entre vendedores y clientes en el mercado inmobiliario, incluyendo la gestión de usuarios, propiedades y agendamiento de citas. Adicionalmente, contiene autenticación con JWT, un panel de inicio en frontend realizado en REACTJS con Vite que contiene funcionalidades CRUD para usuarios, propiedades, citas y detalles en la edición de propiedades. Este es un proyecto de clase para la asignatura de **entornos de programación**.
 
-Currently, two official plugins are available:
+### 🔧 Tecnologías utilizadas
+- Java 17
+- Spring Boot
+- Maven
+- JPA
+- Spring Security + JWT
+- Base de datos relacional en MySQL con alojamiento en Clever Cloud
+- REACTJS
+- CSS
+  
+### 🚀 Funcionalidades principales
+- Registro y login de usuarios con token JWT.
+- CRUD de propiedades, tipos, estados y operaciones.
+- Agendamiento y edición de citas.
+- Roles de usuario y autorización por permisos.
+- Conexión con base de datos en la nube.
+- Protección de endpoints con seguridad JWT.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+### 👤 Autores
+- [Valentina Álvarez](https://github.com/valentinav03)
+- [Nery Aponte](https://github.com/NeryAponte98)
+- [Nelson Mendoza](https://github.com/NelsonMendoza1021)
+- [Miguel Quintero](https://github.com/quinteromiguel)
