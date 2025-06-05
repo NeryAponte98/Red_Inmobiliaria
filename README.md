@@ -1,6 +1,8 @@
-# 🏠 RedInmobiliaria 
+# Frontend RedInmobiliaria con REACTJS
 
 Plataforma web de conexión entre vendedores y clientes en el mercado inmobiliario, incluyendo la gestión de usuarios, propiedades y agendamiento de citas. Adicionalmente, contiene autenticación con JWT, un panel de inicio en frontend realizado en REACTJS con Vite que contiene funcionalidades CRUD para usuarios, propiedades, citas y detalles en la edición de propiedades. Este es un proyecto de clase para la asignatura de **entornos de programación**.
+
+En este repositorio se encuentra el frontend actualizado con REACTJS y el backend clonado de la primera entrega. Del mismo modo, se comparte el repositorio que se utilizó para el [backend] (https://github.com/valentinav03/RedInmobiliaria) 
 
 ### 🔧 Tecnologías utilizadas
 - Java 17
@@ -9,7 +11,7 @@ Plataforma web de conexión entre vendedores y clientes en el mercado inmobiliar
 - JPA
 - Spring Security + JWT
 - Base de datos relacional en MySQL con alojamiento en Clever Cloud
-- REACTJS
+- REACTJS + Vite
 - CSS
   
 ### 🚀 Funcionalidades principales
